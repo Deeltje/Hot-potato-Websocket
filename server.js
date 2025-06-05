@@ -20,18 +20,55 @@ let nextPlayerIndex = 0;
 
 // Create the HTTP server
 const server = http.createServer((req, res) => {
-  // get the file path from req.url, or '/public/index.html' if req.url is '/'
-  const filePath = ( req.url === '/' ) ? '/public/index.html' : req.url;
+  // Default to '/public/index.html' if root requested
+  const filePath = (req.url === '/') ? '/public/index.html' : req.url;
 
-  // determine the contentType by the file extension
-  const extname = path.extname(filePath);
+  // Full path to the file
+  const fullPath = path.join(__dirname, filePath);
+
+  // Get file extension
+  const extname = path.extname(fullPath).toLowerCase();
+
+  // Determine content type based on file extension
   let contentType = 'text/html';
-  if (extname === '.js') contentType = 'text/javascript';
-  else if (extname === '.css') contentType = 'text/css';
+  switch (extname) {
+    case '.js':
+      contentType = 'text/javascript';
+      break;
+    case '.css':
+      contentType = 'text/css';
+      break;
+    case '.json':
+      contentType = 'application/json';
+      break;
+    case '.png':
+      contentType = 'image/png';
+      break;
+    case '.jpg':
+    case '.jpeg':
+      contentType = 'image/jpeg';
+      break;
+    case '.gif':
+      contentType = 'image/gif';
+      break;
+    case '.svg':
+      contentType = 'image/svg+xml';
+      break;
+    // add more mime types as needed
+  }
 
-  // pipe the proper file to the res object
-  res.writeHead(200, { 'Content-Type': contentType });
-  fs.createReadStream(`${__dirname}/${filePath}`, 'utf8').pipe(res);
+  // Check if file exists before serving
+  fs.exists(fullPath, (exists) => {
+    if (!exists) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('404 Not Found');
+      return;
+    }
+
+    // Stream the file with the correct content type
+    res.writeHead(200, { 'Content-Type': contentType });
+    fs.createReadStream(fullPath).pipe(res);
+  });
 });
 
 ///////////////////////////////////////////////
