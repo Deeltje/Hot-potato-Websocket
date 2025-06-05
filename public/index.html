@@ -15,10 +15,10 @@
   </div>
   <div id="game">
     <div id="table">   
-      <div class="player" id="BLUE"><img class="playerAvatar" src="/public/images/avatar_1.png"></div>
-      <div class="player" id="GREEN"><img class="playerAvatar" src="/public/images/avatar_2.png"></div>
-      <div class="player" id="PINK"><img class="playerAvatar" src="/public/images/avatar_3.png"></div>
-      <div class="player" id="YELLOW"><img class="playerAvatar" src="/public/images/avatar_4.png"></div>
+      <div class="player" id="BLUE"><img class="playerAvatar" src="/public/images/BLUE_COLD.png"></div>
+      <div class="player" id="GREEN"><img class="playerAvatar" src="/public/images/GREEN_COLD.png"></div>
+      <div class="player" id="PINK"><img class="playerAvatar" src="/public/images/PINK_COLD.png"></div>
+      <div class="player" id="YELLOW"><img class="playerAvatar" src="/public/images/YELLOW_COLD.png"></div>
     </div>
   </div>
   <script>
@@ -162,7 +162,15 @@
       potatoHolderIndex = newPotatoHolderIndex;
       playerElements.forEach((playerElement, i) => {
         const playerAvatar = playerElement.childNodes[0];
-        playerAvatar.src = i === potatoHolderIndex ? playerAvatar.src.replace('COLD', 'HOT') : playerAvatar.src.replace('HOT', 'COLD');
+        const hasPotato = i === potatoHolderIndex;
+
+        if (hasPotato) {
+          playerElement.classList.add('hasPotato');
+          playerAvatar.src.replace('COLD', 'HOT');
+        } else {
+          playerElement.classList.remove('hasPotato');
+          playerAvatar.src.replace('HOT', 'COLD');
+        }
       })
     }
 
